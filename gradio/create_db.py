@@ -21,8 +21,8 @@ def set_database():
     # Create OFFICERS table
     create_officers_table_query = """
     CREATE TABLE IF NOT EXISTS OFFICERS (
-        UID VARCHAR(50) PRIMARY KEY,
-        NAME VARCHAR(100),
+        UID VARCHAR(50) PRIMARY KEY NOT NULL,
+        NAME VARCHAR(100) NOT NULL,
         OFFICER_RANK VARCHAR(100),
         UNIT VARCHAR(100),
         IS_MESS_MEMBER BOOLEAN
@@ -34,9 +34,9 @@ def set_database():
     # Create TOTAL_CHARGES table
     create_total_charges_table_query = """
     CREATE TABLE IF NOT EXISTS TOTAL_CHARGES (
-        UID VARCHAR(50),
+        UID VARCHAR(50) NOT NULL,
         DESCRIPTION VARCHAR(500),
-        AMOUNT INT,
+        AMOUNT INT NOT NULL,
         TYPE_OF_CHARGE VARCHAR(200),
         DATE VARCHAR(20),
         FOREIGN KEY (UID) REFERENCES OFFICERS(UID)

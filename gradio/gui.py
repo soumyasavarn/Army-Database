@@ -1,16 +1,19 @@
+import pandas as pd
 from create_db import set_database
-from functions import add_officer, add_charge, existing_officers_name, existing_officers_uid, get_name_rank,get_total_charges
+from functions import add_officer, add_charge, existing_officers_name, existing_officers_uid, get_name_rank,get_total_charges,get_name_from_uid,get_name_uid
 import gradio as gr
 
 def refresh_officers(dataframe):
     officers_data = get_name_rank()  # Fetch officers' details from the database
-    print(officers_data)
     print(type(officers_data))
-    dataframe.update(data=[['A','B'],['c','d']])
+    officers_df = pd.DataFrame(officers_data)
+    print(officers_df)
+    dataframe.update(data=officers_df)
 
 def refresh_charges(dataframe):
     charges_data = get_name_rank()  # Fetch charges' details from the database
     dataframe.update(data=charges_data)
+
 
 with gr.Blocks() as demo:
     set_database()
@@ -35,7 +38,7 @@ with gr.Blocks() as demo:
     with gr.Tab("Add Charge"):
         with gr.Row():
             with gr.Column(scale=1):
-                uid_dropdown = gr.Dropdown(["Select Officer"] + existing_officers_uid(), label="Officer UID")
+                uid_dropdown = gr.Dropdown(["Select Officer"] + get_name_uid(), label="Officer UID")
                 description_text = gr.Textbox(label="Charge Description")
                 amount_text = gr.Textbox(label="Charge Amount")
                 date_text = gr.Textbox(label="Charge Date")
@@ -50,9 +53,11 @@ with gr.Blocks() as demo:
                 )
                 refresh_charges_btn = gr.Button("Refresh Charges")
 
-    message_output = gr.Textbox(label="Messages", interactive=False, lines=2)
+    message_output = gr.Textbox(label="Status", interactive=False, lines=2)
     
-    print (get_total_charges(12))
+    # print (get_total_charges(12))
+    # print (get_name_from_uid(12))
+
     # Linking buttons to actions
     add_officer_btn.click(add_officer, inputs=[uid_text, name_text, rank_text, unit_text], outputs=message_output)
     add_charge_btn.click(add_charge, inputs=[uid_dropdown, description_text, amount_text, date_text, charge_type_dropdown], outputs=message_output)

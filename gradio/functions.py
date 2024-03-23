@@ -31,9 +31,15 @@ def add_charge(uid, description, amount, charge_date, charge_type):
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
+        slice_index=0
+        for i in range(0,len(uid)):
+            if uid[i]==":":
+                slice_index=i
+                break
+        
         insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE)
                           VALUES (%s, %s, %s, %s, %s)"""
-        cursor.execute(insert_query, (uid, description, amount, charge_date, charge_type))
+        cursor.execute(insert_query, (uid[:slice_index], description, amount, charge_date, charge_type))
         connection.commit()
         return "Charge added successfully."
     except mysql.connector.Error as err:
@@ -96,13 +102,35 @@ def get_name_rank():
         cursor = connection.cursor()
         select_query = "SELECT NAME,OFFICER_RANK FROM OFFICERS"
         cursor.execute(select_query)
-        officers_name_rank_list = [[row[0],row[1]] for row in cursor.fetchall()]      
+        officers_name_rank_list = [list([str(row[0]),str(row[1])]) for row in cursor.fetchall()]      
     except mysql.connector.Error as err:
         print(f"Error: {err}")
     finally:
         cursor.close()
         connection.close()
-        return officers_name_rank_list
+        return list(officers_name_rank_list)
+
+#utility function for fetching name from uid    
+def get_name_from_uid(uid):
+    name=""
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="your_password",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT NAME FROM OFFICERS WHERE UID=%s"
+        cursor.execute(select_query,(uid,))
+        name = [str(row[0]) for row in cursor.fetchall()]
+        name = str(name [0])      
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
+        connection.close()
+        return name
 
 def get_total_charges(uid):
     li=[]
@@ -123,7 +151,14 @@ def get_total_charges(uid):
         cursor.close()
         connection.close()
         return sum(li)
-
+    
+def get_name_uid():
+    l1=existing_officers_uid()
+    l2=existing_officers_name()
+    l3=[]
+    for i in range(0,len(l1)):
+        l3.append(l1[i]+": "+l2[i])
+    return l3
 #---------------------------UNDER CONSTRUCTION BELOW----------------------------------
 def get_name_charges():
     officers_name_charges=[]
