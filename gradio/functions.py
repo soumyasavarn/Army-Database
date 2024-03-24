@@ -58,6 +58,7 @@ def existing_officers_uid():
             password="your_password",
             database="ARMY_CAMP"
         )
+        global cursor
         cursor = connection.cursor()
         select_query = "SELECT UID FROM OFFICERS"
         cursor.execute(select_query)
