@@ -10,10 +10,13 @@ st.subheader("Add New Entry")
 col1, col2 = st.columns(2)
 
 with col1:
+    mess_type = st.selectbox(label="Charge Type",options=["Normal","Daily Messing","Extra Messing"])
+    
     mess_desc = st.text_input(label="Description")
-    mess_amt = st.text_input(label="Amount")
-    mess_type = st.selectbox(label="type",options=["Credit","Debit"])
-    mess_officer = st.text_input(label="Officer Associated")
+    mess_remarks = st.text_input(label="Remarks")
+    mess_amt = st.number_input(label="Amount")
+    if mess_type != "Normal":
+        officer_uid = st.selectbox(label="Officer Associated",options=["A","B","C"])
     charge_date = st.date_input(label="Date")
     col_a, col_b, col_c = st.columns(3)
     with col_b:
