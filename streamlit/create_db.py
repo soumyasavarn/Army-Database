@@ -57,6 +57,19 @@ def set_database():
     create_current_split_cursor = connection.cursor()
     create_current_split_cursor.execute(create_current_split_query)
 
+    create_mess_ledger_query = """
+    CREATE TABLE IF NOT EXISTS MESS_LEDGER (
+        TYPE VARCHAR(50),
+        DESCRIPTION VARCHAR(100),
+        REMARKS VARCHAR(200),
+        AMOUNT INT,
+        OFFICER VARCHAR(100),
+        DATE VARCHAR(20)
+    )
+    """
+    create_mess_ledger_cursor = connection.cursor()
+    create_mess_ledger_cursor.execute(create_mess_ledger_query)
+
     
     print ("database initialised successfully")
 

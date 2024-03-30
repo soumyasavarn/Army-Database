@@ -68,7 +68,48 @@ def get_current_split():
         print(f"Error: {err}")
         
 
-    
+def add_mess_entry(charge_type, description, remarks, amount, officer, date):
+     try:
+         connection = mysql.connector.connect(
+             host="localhost",
+             user="root",
+             password="root",
+             database="ARMY_CAMP"
+         )
+         cursor = connection.cursor()
+         if (charge_type == "Normal"):
+             insert_query = """INSERT INTO MESS_LEDGER (TYPE, DESCRIPTION, REMARKS, AMOUNT, DATE)
+                           VALUES (%s, %s, %s, %s, %s)"""
+             cursor.execute(insert_query, (charge_type, description, remarks, amount, date))   
+         else:
+             insert_query = """INSERT INTO MESS_LEDGER (TYPE, DESCRIPTION, REMARKS, AMOUNT, OFFICER, DATE)
+                           VALUES (%s, %s, %s, %s, %s, %s)"""
+             cursor.execute(insert_query, (charge_type, description, remarks, amount, officer, date))   
+             
+         connection.commit()
+         return "Added successfully."
+         connection.close()
+     except mysql.connector.Error as err:
+         return err
+
+def get_mess_entry():
+    mess_list=[]
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT TYPE,DESCRIPTION,AMOUNT FROM MESS_LEDGER limit 10"
+        cursor.execute(select_query)
+        mess_list = [list([str(row[0]),str(row[1]),str(row[2])]) for row in cursor.fetchall()] 
+        connection.close()
+        return list(mess_list)
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+      
 
 #commit function
 def add_charge(charge_type, uid, description, amount, charge_date, charge_remarks, officers_split):
