@@ -25,7 +25,10 @@ def set_database():
         NAME VARCHAR(100) NOT NULL,
         OFFICER_RANK VARCHAR(100),
         UNIT VARCHAR(100),
-        IS_MESS_MEMBER BOOLEAN
+        IS_MESS_MEMBER BOOLEAN,
+        IS_MARRIED BOOLEAN,
+        ACCOMADATION_AVAILED BOOLEAN,
+        IS_GUEST BOOLEAN
     )
     """
     create_officers_table_cursor = connection.cursor()
@@ -39,12 +42,22 @@ def set_database():
         AMOUNT INT NOT NULL,
         TYPE_OF_CHARGE VARCHAR(200),
         DATE VARCHAR(20),
-        FOREIGN KEY (UID) REFERENCES OFFICERS(UID)
+        REMARKS VARCHAR(200)
     )
     """
     create_total_charges_table_cursor = connection.cursor()
     create_total_charges_table_cursor.execute(create_total_charges_table_query)
 
+    create_current_split_query = """
+    CREATE TABLE IF NOT EXISTS CURRENT_SPLIT (
+        NAME VARCHAR(100),
+        AMOUNT INT NOT NULL
+    )
+    """
+    create_current_split_cursor = connection.cursor()
+    create_current_split_cursor.execute(create_current_split_query)
+
+    
     print ("database initialised successfully")
 
     # Commit changes and close connection

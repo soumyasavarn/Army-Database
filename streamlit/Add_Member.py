@@ -1,29 +1,25 @@
 import streamlit as st
 import pandas as pd
 from create_db import set_database
-from functions import add_officer, add_charge, existing_officers_name, existing_officers_uid, get_name_rank,get_total_charges,get_name_from_uid,get_name_uid
+from functions import *
 import numpy as np
 st.set_page_config(layout="wide")
 
-def refresh_officers(dataframe):
-    officers_data = get_name_rank()  # Fetch officers' details from the database
-    print(type(officers_data))
-    officers_df = pd.DataFrame(officers_data)
-    print(officers_df)
-    dataframe.update(data=officers_df)
-
-def refresh_charges(dataframe):
-    charges_data = get_name_rank()  # Fetch charges' details from the database
-    dataframe.update(data=charges_data)
-
 set_database()
-print(get_name_rank)
 
 st.subheader("Add New Member")   
 
 col1, col2 = st.columns(2)
 
-with col1:    
+with col1:
+    
+    officer_uid = ""
+    officer_rank = ""
+    officer_unit = ""
+    married = False
+    accomadation = False
+    mess_member = False
+    
     guest = st.toggle('Guest')
     officer_name = st.text_input(label="Name")
     if not (guest):
@@ -39,11 +35,12 @@ with col1:
             mess_member = st.checkbox(label = "Mess Member")
     col_a, col_b, col_c = st.columns(3)
     with col_b:
-        st.button(label="Add Member")
-        #st.button(label="Add Member",on_click=add_officer(officer_uid, officer_name, officer_rank, officer_unit))
+        if st.button(label="Add Member"):
+            st.text(add_officer(officer_uid, officer_name, officer_rank, officer_unit, married, accomadation, mess_member, guest))
+            
 
 with col2:
-    st.dataframe(pd.DataFrame(np.random.randn(50, 3), columns=("col %d" % i for i in range(3))),use_container_width=True)
+    name_and_rank = get_name_rank()
+    st.dataframe(pd.DataFrame(name_and_rank, columns = ["Name","Rank"]),use_container_width=True)
+    print(name_and_rank)
 
-#print (get_total_charges(12))
-#print (get_name_from_uid(12))
