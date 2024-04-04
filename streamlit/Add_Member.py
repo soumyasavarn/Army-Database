@@ -24,7 +24,7 @@ with col1:
     officer_name = st.text_input(label="Name")
     if not (guest):
         officer_uid = st.text_input(label="UID")
-        officer_rank = st.selectbox(label="Rank",options=["Rank 1","Rank 2","Rank 3"])
+        officer_rank = st.selectbox(label="Rank",options=["Rank 1","Rank 2","Rank 3","Rank 4"])
         officer_unit = st.text_input(label="Unit")
         col_a, col_b, col_c = st.columns(3)
         with col_a:

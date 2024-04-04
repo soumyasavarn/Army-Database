@@ -16,7 +16,7 @@ with col1:
     officers_split = []
     charge_type = st.selectbox(label="",options=["Split","Individual"])
     if charge_type != "Split":    
-        officer_uid = st.selectbox(label="Officer UID",options=["A","B","C"])
+        officer_uid = st.selectbox(label="Officer UID",options=get_name_uid())
     charge_desc = st.text_input(label="Charge Description")
     
     if charge_type == "Split":
@@ -31,7 +31,7 @@ with col1:
             st.dataframe(pd.DataFrame(officers_split,columns=["Name","Share"]),use_container_width=True)
         cola, colb = st.columns(2)
         with cola:
-            officer_split_id = st.selectbox(label="Officer",options=["A","B","C"])
+            officer_split_id = st.selectbox(label="Officer",options=['A','B'])
             
         with colb:
             officer_split_amt = st.number_input(label="Share")

@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
+from functions import *
 st.set_page_config(layout="wide")
 
 st.subheader("Add/Modify Subscription")   
@@ -24,21 +24,26 @@ col1, col2 = st.columns(2)
 # Render input fields based on mode
 with col1:
     if st.session_state.mode == "Add":
-        officer_rank = st.text_input(label="Rank")
+        rank_1 = st.checkbox("Rank 1")
+        rank_2 = st.checkbox("Rank 2")
+        rank_3 = st.checkbox("Rank 3")
+        rank_4 = st.checkbox("Rank 4")
         subscription_name = st.text_input(label="Subscription Name")
         charge_amt = st.text_input(label="Amount")
         if st.button("Add Subscription"):
-            # Add subscription logic here
+            rank_applicable=[rank_1,rank_2,rank_3,rank_4]
+            print(rank_applicable)
+            st.text(addto_fixed_charges(rank_applicable, subscription_name,charge_amt))
             pass
     elif st.session_state.mode == "Modify":
-        officer_rank1 = st.text_input(label="Rank")
-        option = st.selectbox('Subscription Name', ('x', 'y', 'z'))
+        rank = st.selectbox('Rank', ["Rank 1","Rank 2","Rank 3","Rank 4"])
+        name_option = st.selectbox('Subscription Name', get_fixed_charges_name())
         charge_amt1 = st.text_input(label="Amount")
         if st.button("Modify Subscription"):
-            # Modify subscription logic here
+            st.text(modify_fixed_charge(name_option,rank,charge_amt1))
             pass
 
 # Dummy dataframe for demonstration
 with col2: 
-    data = pd.DataFrame(np.random.randn(50, 3), columns=("col %d" % i for i in range(3)))
-    st.dataframe(data, use_container_width=True)
+    fixed_charge_list = get_fixed_charges()
+    st.dataframe(pd.DataFrame(fixed_charge_list,columns=["Fixed Charge","Rank 1", "Rank 2","Rank 3","Rank 4"]),use_container_width=True)

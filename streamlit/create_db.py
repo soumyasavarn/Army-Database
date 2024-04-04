@@ -5,7 +5,7 @@ def set_database():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="root",
+        password="root@123",
     )
     print ("database connnected successfully")
     # Create database if not exists
@@ -33,6 +33,19 @@ def set_database():
     """
     create_officers_table_cursor = connection.cursor()
     create_officers_table_cursor.execute(create_officers_table_query)
+
+    # Create FIXED_CHARGES table
+    create_fixed_charges_table_query = """
+    CREATE TABLE IF NOT EXISTS FIXED_CHARGES (
+        SUB_NAME VARCHAR(50) PRIMARY KEY NOT NULL,
+        RANK_1 FLOAT NOT NULL,
+        RANK_2 FLOAT NOT NULL,
+        RANK_3 FLOAT NOT NULL,
+        RANK_4 FLOAT NOT NULL
+    )
+    """
+    create_fixed_charges_table_cursor = connection.cursor()
+    create_fixed_charges_table_cursor.execute(create_fixed_charges_table_query)
 
     # Create TOTAL_CHARGES table
     create_total_charges_table_query = """
