@@ -7,7 +7,7 @@ import random
 import os
 from datetime import datetime
 
-def generate_bill(officer,arrears):
+def generate_bill(officer,arrears,month):
     def onLaterPages(canvas, doc):
         width, height = letter
         # Adjust the following path to where your image is located
@@ -25,6 +25,21 @@ def generate_bill(officer,arrears):
     
     name=officer[i+2:]
     uid=officer[0:i-1]
+
+    month_dict_inv = {
+    "January": "01",
+    "February": "02",
+    "March": "03",
+    "April": "04",
+    "May": "05",
+    "June": "06",
+    "July": "07",
+    "August": "08",
+    "September": "09",
+    "October": "10",
+    "November": "11",
+    "December": "12"
+    }
 
     name_tmp=name.replace(" ","_")
     # Create a SimpleDocTemplate object for the PDF
@@ -54,7 +69,7 @@ def generate_bill(officer,arrears):
     }
     data1 = [
         ["", "",  "OFERS MESS : 621 EME BN", ""],
-        ["Name: ",name, "Bill Month: ", month_dict[int(current_month)]+" "+current_year, "Bill Date:", current_date],
+        ["Name: ",name, "Bill Month: ", month + " "+current_year, "Bill Date:", current_date],
         ["Unit: ", get_unit(uid), "Bill no.:", random.randint(100,1000)],
         [],
         [],
@@ -70,7 +85,9 @@ def generate_bill(officer,arrears):
 
     table1 = Table(data1, style=table_style1)
 
-    total_bill=get_total_bill(officer,arrears)
+    month=month_dict_inv[month]
+    print (month)
+    total_bill=get_total_bill(officer,arrears,month)
     print (total_bill)
     # Define table data and style for the second table, ensuring Rupee symbol usage
     data2=[]

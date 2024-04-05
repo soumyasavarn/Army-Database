@@ -1,7 +1,7 @@
 import mysql.connector
 import pandas as pd
 import random
-
+from datetime import datetime
 
 #commit function
 def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomodation, mess_member, guest):
@@ -181,8 +181,8 @@ def add_mess_entry(charge_type, description, remarks, amount, officer, date):
              cursor.execute(insert_query, (charge_type, description, remarks, amount, officer, date))   
              
          connection.commit()
-         return "Added successfully."
          connection.close()
+         return "Added successfully."
      except mysql.connector.Error as err:
          return err
 
@@ -243,7 +243,6 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
         return f"Error: {err}"
         
 def get_charges():
-    
     charge_data = []
     try:
         connection = mysql.connector.connect(
@@ -421,7 +420,7 @@ def get_name_uid_mess_member():
     return l3
 
 #Groups all possible charges of an officer and returns a list of tuple/list
-def get_total_bill(officer,arrears):
+def get_total_bill(officer,arrears,month):
     #[ser,desc,amount,remarks]
     final_list=[]
     #This is the list to be returned (initialised here as global variable)
@@ -431,8 +430,11 @@ def get_total_bill(officer,arrears):
             ind=i
             break
 
+    month=int(month)
+    print(month)
+
     name=officer[i+2:]
-    uid=officer[0:i-1]
+    uid=officer[:i-1]
     rank=[]
     try:
         connection = mysql.connector.connect(
@@ -467,9 +469,9 @@ def get_total_bill(officer,arrears):
         select_query = "SELECT IS_MARRIED,ACCOMODATION_AVAILED FROM OFFICERS WHERE UID = %s"
         cursor.execute(select_query,(uid,))
         charges = [[bool(row[0]),bool(row[1])] for row in cursor.fetchall()]
-        print(charges)
+        # print(charges)
         connection.close()
-        print (charges)    
+        # print (charges)    
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
@@ -478,6 +480,7 @@ def get_total_bill(officer,arrears):
     mess=[]
     daily=0.00
     extra=0.00
+    
     try:
         connection = mysql.connector.connect(
             host="localhost",
@@ -486,24 +489,28 @@ def get_total_bill(officer,arrears):
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        Daily_Messing="Daily Messing"
-        Extra_Messing="Extra Messing"
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = %s AND OFFICER = %s"
-        cursor.execute(select_query,(Daily_Messing,officer,))
+        Daily_Messing = "Daily Messing"
+        Extra_Messing = "Extra Messing"
+
+        # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month)
+        cursor.execute(select_query, (Daily_Messing, officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
-        daily=sum(mess)
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = %s AND OFFICER = %s'"
-        cursor.execute(select_query,(Extra_Messing,officer,))
+        daily = sum(mess)
+
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month)
+        cursor.execute(select_query, (Extra_Messing, officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
-        extra=sum(mess)
+        extra = sum(mess)
+
         connection.close()
-        print (daily,extra)    
+        # print (daily, extra)
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         
     messing_charge_list.append([1,"Daily Messing",daily,""])
     messing_charge_list.append([2,"Extra Messing",extra,""])
-    print(messing_charge_list)
+    # print(messing_charge_list)
 
     # 2. fixed charges list
     fixed_charge_list=[]
@@ -535,7 +542,7 @@ def get_total_bill(officer,arrears):
         print(f"Error: {err}")
     for i in range (5,len(fix)+5):
         fixed_charge_list.append([i,fix[i-5][0],fix[i-5][1],""])
-    print(fixed_charge_list)
+    # print(fixed_charge_list)
 
     # 3. misc charges list
     misc_charge_list=[]
@@ -548,17 +555,19 @@ def get_total_bill(officer,arrears):
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        select_query = "SELECT DESCRIPTION,AMOUNT,REMARKS FROM TOTAL_CHARGES WHERE UID=" + uid
+
+        # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
+        select_query = "SELECT DESCRIPTION, AMOUNT, REMARKS FROM TOTAL_CHARGES WHERE MONTH(DATE) = {} AND UID = '{}'".format(month, officer)
+        
         cursor.execute(select_query)
         misc = [list(row) for row in cursor.fetchall()]
-        print(misc)
+        # print(misc)
         connection.close()
-        
     except mysql.connector.Error as err:
         print(f"Error: {err}")
     for i in range (0,len(misc)):
         misc_charge_list.append([i+3+len(fix),misc[i][0],misc[i][1],misc[i][2]])
-    print(misc_charge_list)
+    # print(misc_charge_list)
 
     for i in messing_charge_list:
         final_list.append(i)
@@ -576,5 +585,5 @@ def get_total_bill(officer,arrears):
     final_list.append(["","","R/Off: ",int(total_sum)+int(arrears)-total_sum-float(arrears)])
     final_list.append(["","","Amount Payable: ",float(int(total_sum)+int(arrears))])
 
-    print (final_list)
+    # print (final_list)
     return final_list

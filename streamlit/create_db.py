@@ -65,7 +65,7 @@ def set_database():
         DESCRIPTION VARCHAR(500),
         AMOUNT FLOAT NOT NULL,
         TYPE_OF_CHARGE VARCHAR(200),
-        DATE VARCHAR(20),
+        DATE VARCHAR(20) NOT NULL,
         REMARKS VARCHAR(200)
     )
     """
@@ -88,7 +88,7 @@ def set_database():
         REMARKS VARCHAR(200),
         AMOUNT FLOAT NOT NULL,
         OFFICER VARCHAR(100) ,
-        DATE VARCHAR(20)
+        DATE VARCHAR(20) NOT NULL
     )
     """
     create_mess_ledger_cursor = connection.cursor()
