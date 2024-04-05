@@ -4,7 +4,7 @@ import random
 
 
 #commit function
-def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomadation, mess_member, guest):
+def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomodation, mess_member, guest):
     try:
         connection = mysql.connector.connect(
             host="localhost",
@@ -19,9 +19,9 @@ def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomada
                           VALUES (%s, %s,%s)"""
             cursor.execute(insert_query, (uid, officer_name, guest))
         else:
-            insert_query = """INSERT INTO OFFICERS (UID, NAME, OFFICER_RANK, UNIT, IS_MESS_MEMBER, IS_MARRIED, ACCOMADATION_AVAILED, IS_GUEST)
+            insert_query = """INSERT INTO OFFICERS (UID, NAME, OFFICER_RANK, UNIT, IS_MESS_MEMBER, IS_MARRIED, ACCOMODATION_AVAILED, IS_GUEST)
                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-            cursor.execute(insert_query, (uid, officer_name, officer_rank, officer_unit, mess_member, married, accomadation, guest))
+            cursor.execute(insert_query, (uid, officer_name, officer_rank, officer_unit, mess_member, married, accomodation, guest))
             
         connection.commit()
         connection.close()
@@ -281,6 +281,26 @@ def existing_officers_uid():
         return uid_list
     except mysql.connector.Error as err:
         print(f"Error: {err}")
+
+#display funtion
+def existing_officers_uid_mess():
+    uid_list=[]
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        global cursor
+        cursor = connection.cursor()
+        select_query = "SELECT UID FROM OFFICERS WHERE IS_MESS_MEMBER=1"
+        cursor.execute(select_query)
+        uid_list = [row[0] for row in cursor.fetchall()]  
+        connection.close()
+        return uid_list
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
         
 
 #display function
@@ -295,6 +315,26 @@ def existing_officers_name():
         )
         cursor = connection.cursor()
         select_query = "SELECT NAME FROM OFFICERS"
+        cursor.execute(select_query)
+        officers_name_list = [row[0] for row in cursor.fetchall()]      
+        connection.close()
+        return officers_name_list
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+
+#display function
+def existing_officers_name_mess():
+    officers_name_list=[]
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT NAME FROM OFFICERS WHERE IS_MESS_MEMBER=1"
         cursor.execute(select_query)
         officers_name_list = [row[0] for row in cursor.fetchall()]      
         connection.close()
@@ -372,6 +412,14 @@ def get_name_uid():
         l3.append(l1[i]+" : "+l2[i])
     return l3
 
+def get_name_uid_mess_member():
+    l1=existing_officers_uid_mess()
+    l2=existing_officers_name_mess()
+    l3=[]
+    for i in range(0,len(l1)):
+        l3.append(l1[i]+" : "+l2[i])
+    return l3
+
 #Groups all possible charges of an officer and returns a list of tuple/list
 def get_total_bill(officer,arrears):
     #[ser,desc,amount,remarks]
@@ -385,7 +433,7 @@ def get_total_bill(officer,arrears):
 
     name=officer[i+2:]
     uid=officer[0:i-1]
-    rank=None
+    rank=[]
     try:
         connection = mysql.connector.connect(
             host="localhost",
@@ -407,12 +455,27 @@ def get_total_bill(officer,arrears):
     rank=rank.replace(" ","_")
     # print(rank)
     # print(name,uid)
-    
-
+    charges=None
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT IS_MARRIED,ACCOMODATION_AVAILED FROM OFFICERS WHERE UID = %s"
+        cursor.execute(select_query,(uid,))
+        charges = [[bool(row[0]),bool(row[1])] for row in cursor.fetchall()]
+        print(charges)
+        connection.close()
+        print (charges)    
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
 
     # 1. messing charges
     messing_charge_list=[]
-    mess=None
+    mess=[]
     daily=0.00
     extra=0.00
     try:
@@ -423,12 +486,14 @@ def get_total_bill(officer,arrears):
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = 'Daily Messing' AND OFFICER = %s"
-        cursor.execute(select_query,(officer,))
+        Daily_Messing="Daily Messing"
+        Extra_Messing="Extra Messing"
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = %s AND OFFICER = %s"
+        cursor.execute(select_query,(Daily_Messing,officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
         daily=sum(mess)
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = 'Extra Messing AND OFFICER = %s'"
-        cursor.execute(select_query,(officer,))
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = %s AND OFFICER = %s'"
+        cursor.execute(select_query,(Extra_Messing,officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
         extra=sum(mess)
         connection.close()
@@ -442,7 +507,7 @@ def get_total_bill(officer,arrears):
 
     # 2. fixed charges list
     fixed_charge_list=[]
-    fix=None
+    fix=[]
     try:
         connection = mysql.connector.connect(
             host="localhost",
@@ -451,20 +516,30 @@ def get_total_bill(officer,arrears):
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES"
+        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME='Spouse Memento Fund'"
+        cursor.execute(select_query)
+        fix = [list(row) for row in cursor.fetchall()]
+        fixed_charge_list.append([3,fix[0][0],float(fix[0][1])*int(charges[0][0]),""])
+
+        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME='Accomodation'"
+        cursor.execute(select_query)
+        fix = [list(row) for row in cursor.fetchall()]
+        fixed_charge_list.append([4,fix[0][0],float(fix[0][1])*int(charges[0][1]),""])
+
+        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME!='Accomodation' AND SUB_NAME!='Spouse Memento Fund'"
         cursor.execute(select_query)
         fix = [list(row) for row in cursor.fetchall()]
         connection.close()
         
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-    for i in range (3,len(fix)+3):
-        fixed_charge_list.append([i,fix[i-3][0],fix[i-3][1],""])
+    for i in range (5,len(fix)+5):
+        fixed_charge_list.append([i,fix[i-5][0],fix[i-5][1],""])
     print(fixed_charge_list)
 
     # 3. misc charges list
     misc_charge_list=[]
-    misc=None
+    misc=[]
     try:
         connection = mysql.connector.connect(
             host="localhost",

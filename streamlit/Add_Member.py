@@ -17,7 +17,7 @@ with col1:
     officer_rank = ""
     officer_unit = ""
     married = False
-    accomadation = False
+    accomodation = False
     mess_member = False
     
     guest = st.toggle('Guest')
@@ -30,13 +30,13 @@ with col1:
         with col_a:
             married = st.checkbox(label = "Married")
         with col_b:
-            accomadation = st.checkbox(label = "Accomadation")
+            accomodation = st.checkbox(label = "Accomodation")
         with col_c:
             mess_member = st.checkbox(label = "Mess Member")
     col_a, col_b, col_c = st.columns(3)
     with col_b:
         if st.button(label="Add Member"):
-            st.text(add_officer(officer_uid, officer_name, officer_rank, officer_unit, married, accomadation, mess_member, guest))
+            st.text(add_officer(officer_uid, officer_name, officer_rank, officer_unit, married, accomodation, mess_member, guest))
             
 
 with col2:

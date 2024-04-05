@@ -16,7 +16,7 @@ with col1:
     mess_remarks = st.text_input(label="Remarks")
     mess_amt = st.number_input(label="Amount")
     if mess_type != "Normal":
-        officer_uid = st.selectbox(label="Officer Associated",options=get_name_uid())
+        officer_uid = st.selectbox(label="Officer Associated",options=get_name_uid_mess_member())
     charge_date = st.date_input(label="Date")
     col_a, col_b, col_c = st.columns(3)
     with col_b:

@@ -27,7 +27,7 @@ def set_database():
         UNIT VARCHAR(100),
         IS_MESS_MEMBER BOOLEAN,
         IS_MARRIED BOOLEAN,
-        ACCOMADATION_AVAILED BOOLEAN,
+        ACCOMODATION_AVAILED BOOLEAN,
         IS_GUEST BOOLEAN
     )
     """
@@ -46,6 +46,17 @@ def set_database():
     """
     create_fixed_charges_table_cursor = connection.cursor()
     create_fixed_charges_table_cursor.execute(create_fixed_charges_table_query)
+
+
+    sql = "INSERT IGNORE INTO FIXED_CHARGES (SUB_NAME, RANK_1, RANK_2, RANK_3, RANK_4) VALUES (%s, %s, %s, %s, %s)"
+    val = ("Accomodation", "200", "200", "200", "200")
+    mycursor = connection.cursor()
+    mycursor.execute(sql, val)
+
+    sql = "INSERT IGNORE INTO FIXED_CHARGES (SUB_NAME, RANK_1, RANK_2, RANK_3, RANK_4) VALUES (%s, %s, %s, %s, %s)"
+    val = ("Spouse Memento Fund", "200", "200", "200", "200")
+    mycursor.execute(sql, val)
+
 
     # Create TOTAL_CHARGES table
     create_total_charges_table_query = """
