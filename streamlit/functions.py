@@ -24,8 +24,8 @@ def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomada
             cursor.execute(insert_query, (uid, officer_name, officer_rank, officer_unit, mess_member, married, accomadation, guest))
             
         connection.commit()
-        return "Added successfully."
         connection.close()
+        return "Added successfully."
     except mysql.connector.Error as err:
         return err
 
@@ -98,8 +98,26 @@ def addto_current_split(name, amount):
                           VALUES (%s, %s)"""
         cursor.execute(insert_query, (name, amount))
         connection.commit()
-        return "Split added successfully."
         connection.close()
+        return "Split added successfully."
+    except mysql.connector.Error as err:
+        return f"Error: {err}"
+
+def empty_current_split():
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        query = """TRUNCATE TABLE CURRENT_SPLIT;"""
+        cursor.execute(query)
+        connection.commit()
+        connection.close()
+        return "Split cleared."
+    
     except mysql.connector.Error as err:
         return f"Error: {err}"
     
@@ -208,9 +226,19 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
                               VALUES (%s, %s, %s, %s, %s, %s)"""                      
             cursor.execute(insert_query, (uid, description, amount, charge_date, charge_type, charge_remarks))
             connection.commit()
-            
-        return "Charge added successfully."
+        else:
+            #Split logic here
+            if len(officers_split)==0:
+                return "Please enter officers' name"
+            print ("officers_split",officers_split)
+            amount=float(amount)
+            for i in range(0,len(officers_split)):
+                insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE, REMARKS)
+                              VALUES (%s, %s, %s, %s, %s, %s)"""                      
+                cursor.execute(insert_query, (officers_split[i][0], description, amount*float(officers_split[i][1])/100.0, charge_date, charge_type, charge_remarks))
+                connection.commit()
         connection.close()
+        return "Charge added successfully."
     except mysql.connector.Error as err:
         return f"Error: {err}"
         
@@ -292,7 +320,26 @@ def get_name_rank():
         return list(officers_name_rank_list)
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-        
+
+def get_unit(uid):
+    unit=""
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT UNIT FROM OFFICERS WHERE UID=%s"
+        cursor.execute(select_query,(uid,))
+        unit = [str(row[0]) for row in cursor.fetchall()]
+        unit = str(uid [0])      
+        connection.close()
+        return unit       
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+
 
 #utility function for fetching name from uid    
 def get_name_from_uid(uid):
@@ -315,25 +362,6 @@ def get_name_from_uid(uid):
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
-def get_total_charges(uid):
-    
-    li=[]
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="root@123",
-            database="ARMY_CAMP"
-        )
-        cursor = connection.cursor()
-        select_query = "SELECT AMOUNT FROM TOTAL_CHARGES WHERE UID=%s"
-        cursor.execute(select_query,(uid,))
-        li = [float(row[0]) for row in cursor.fetchall()]      
-        connection.close()
-        return sum(li)
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
     
         
 def get_name_uid():
@@ -341,11 +369,23 @@ def get_name_uid():
     l2=existing_officers_name()
     l3=[]
     for i in range(0,len(l1)):
-        l3.append(l1[i]+": "+l2[i])
+        l3.append(l1[i]+" : "+l2[i])
     return l3
-#---------------------------UNDER CONSTRUCTION BELOW----------------------------------
-def get_name_charges():
-    officers_name_charges=[]
+
+#Groups all possible charges of an officer and returns a list of tuple/list
+def get_total_bill(officer,arrears):
+    #[ser,desc,amount,remarks]
+    final_list=[]
+    #This is the list to be returned (initialised here as global variable)
+    ind = 0
+    for i in range(0,len(officer)):
+        if officer[i]==':':
+            ind=i
+            break
+
+    name=officer[i+2:]
+    uid=officer[0:i-1]
+    rank=None
     try:
         connection = mysql.connector.connect(
             host="localhost",
@@ -354,12 +394,112 @@ def get_name_charges():
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        select_query = "SELECT NAME,OFFICER_RANK FROM OFFICERS"
-        cursor.execute(select_query)
-        officers_name_charges = [row[0] for row in cursor.fetchall()]      
+        select_query = "SELECT OFFICER_RANK FROM OFFICERS WHERE UID=%s"
+        cursor.execute(select_query,(uid,))
+        rank = [str(row[0]) for row in cursor.fetchall()]
+        rank=str(rank[0])
+        connection.close()
+        
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-    finally:
-       # cursor.close()
+    
+    rank = rank.upper()
+    rank=rank.replace(" ","_")
+    # print(rank)
+    # print(name,uid)
+    
+
+
+    # 1. messing charges
+    messing_charge_list=[]
+    mess=None
+    daily=0.00
+    extra=0.00
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = 'Daily Messing' AND OFFICER = %s"
+        cursor.execute(select_query,(officer,))
+        mess = [float(row[0]) for row in cursor.fetchall()]
+        daily=sum(mess)
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE TYPE = 'Extra Messing AND OFFICER = %s'"
+        cursor.execute(select_query,(officer,))
+        mess = [float(row[0]) for row in cursor.fetchall()]
+        extra=sum(mess)
         connection.close()
-        return officers_name_charges
+        print (daily,extra)    
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        
+    messing_charge_list.append([1,"Daily Messing",daily,""])
+    messing_charge_list.append([2,"Extra Messing",extra,""])
+    print(messing_charge_list)
+
+    # 2. fixed charges list
+    fixed_charge_list=[]
+    fix=None
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES"
+        cursor.execute(select_query)
+        fix = [list(row) for row in cursor.fetchall()]
+        connection.close()
+        
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    for i in range (3,len(fix)+3):
+        fixed_charge_list.append([i,fix[i-3][0],fix[i-3][1],""])
+    print(fixed_charge_list)
+
+    # 3. misc charges list
+    misc_charge_list=[]
+    misc=None
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root@123",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = "SELECT DESCRIPTION,AMOUNT,REMARKS FROM TOTAL_CHARGES WHERE UID=" + uid
+        cursor.execute(select_query)
+        misc = [list(row) for row in cursor.fetchall()]
+        print(misc)
+        connection.close()
+        
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    for i in range (0,len(misc)):
+        misc_charge_list.append([i+3+len(fix),misc[i][0],misc[i][1],misc[i][2]])
+    print(misc_charge_list)
+
+    for i in messing_charge_list:
+        final_list.append(i)
+    for i in fixed_charge_list:
+        final_list.append(i)
+    for i in misc_charge_list:
+        final_list.append(i)
+    total_sum=0.0
+    for i in final_list:
+        total_sum+=float(i[2])
+    final_list.append(["","","-----","-----"])
+    final_list.append(["","","Total: ",total_sum])
+    final_list.append(["","","Arrears: ",arrears])
+    final_list.append(["","","G/Total: ",total_sum+float(arrears)])
+    final_list.append(["","","R/Off: ",int(total_sum)+int(arrears)-total_sum-float(arrears)])
+    final_list.append(["","","Amount Payable: ",float(int(total_sum)+int(arrears))])
+
+    print (final_list)
+    return final_list

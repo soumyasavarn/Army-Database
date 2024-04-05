@@ -52,7 +52,7 @@ def set_database():
     CREATE TABLE IF NOT EXISTS TOTAL_CHARGES (
         UID VARCHAR(50) NOT NULL,
         DESCRIPTION VARCHAR(500),
-        AMOUNT INT NOT NULL,
+        AMOUNT FLOAT NOT NULL,
         TYPE_OF_CHARGE VARCHAR(200),
         DATE VARCHAR(20),
         REMARKS VARCHAR(200)
@@ -63,8 +63,8 @@ def set_database():
 
     create_current_split_query = """
     CREATE TABLE IF NOT EXISTS CURRENT_SPLIT (
-        NAME VARCHAR(100),
-        AMOUNT INT NOT NULL
+        NAME VARCHAR(100) PRIMARY KEY,
+        AMOUNT FLOAT NOT NULL
     )
     """
     create_current_split_cursor = connection.cursor()
@@ -75,8 +75,8 @@ def set_database():
         TYPE VARCHAR(50),
         DESCRIPTION VARCHAR(100),
         REMARKS VARCHAR(200),
-        AMOUNT INT,
-        OFFICER VARCHAR(100),
+        AMOUNT FLOAT NOT NULL,
+        OFFICER VARCHAR(100) ,
         DATE VARCHAR(20)
     )
     """

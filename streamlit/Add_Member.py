@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from create_db import set_database
 from functions import *
-import numpy as np
+
 st.set_page_config(layout="wide")
 
 set_database()

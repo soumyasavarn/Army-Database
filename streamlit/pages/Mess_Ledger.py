@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from create_db import set_database
 from functions import *
-import numpy as np
 st.set_page_config(layout="wide")
 
 st.subheader("Add New Entry")   
@@ -17,7 +16,7 @@ with col1:
     mess_remarks = st.text_input(label="Remarks")
     mess_amt = st.number_input(label="Amount")
     if mess_type != "Normal":
-        officer_uid = st.selectbox(label="Officer Associated",options=["A","B","C"])
+        officer_uid = st.selectbox(label="Officer Associated",options=get_name_uid())
     charge_date = st.date_input(label="Date")
     col_a, col_b, col_c = st.columns(3)
     with col_b:
