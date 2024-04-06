@@ -566,7 +566,7 @@ def get_total_bill(officer,arrears,month):
     except mysql.connector.Error as err:
         print(f"Error: {err}")
     for i in range (0,len(misc)):
-        misc_charge_list.append([i+3+len(fix),misc[i][0],misc[i][1],misc[i][2]])
+        misc_charge_list.append([i+5+len(fix),misc[i][0],misc[i][1],misc[i][2]])
     # print(misc_charge_list)
 
     for i in messing_charge_list:
