@@ -7,7 +7,7 @@ import random
 import os
 from datetime import datetime
 
-def generate_bill(officer,arrears,month):
+def generate_bill(officer,arrears,month,year):
     def onLaterPages(canvas, doc):
         width, height = letter
         # Adjust the following path to where your image is located
@@ -27,18 +27,18 @@ def generate_bill(officer,arrears,month):
     uid=officer[0:i-1]
 
     month_dict_inv = {
-    "January": "01",
-    "February": "02",
-    "March": "03",
-    "April": "04",
+    "Jan": "01",
+    "Feb": "02",
+    "Mar": "03",
+    "Apr": "04",
     "May": "05",
-    "June": "06",
-    "July": "07",
-    "August": "08",
-    "September": "09",
-    "October": "10",
-    "November": "11",
-    "December": "12"
+    "Jun": "06",
+    "Jul": "07",
+    "Aug": "08",
+    "Sep": "09",
+    "Oct": "10",
+    "Nov": "11",
+    "Dec": "12"
     }
 
     name_tmp=name.replace(" ","_")
@@ -49,9 +49,11 @@ def generate_bill(officer,arrears,month):
     
     # Get the current date
     current_date = datetime.now()
+
     # Extract the month and year
     current_month = str(current_date.month)
     current_year = str(current_date.year)
+    current_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
     # Define table data and style for the first table
     month_dict = {
     1: "January",
@@ -87,7 +89,7 @@ def generate_bill(officer,arrears,month):
 
     month=month_dict_inv[month]
     print (month)
-    total_bill=get_total_bill(officer,arrears,month)
+    total_bill=get_total_bill(officer,arrears,month,year)
     print (total_bill)
     # Define table data and style for the second table, ensuring Rupee symbol usage
     data2=[]

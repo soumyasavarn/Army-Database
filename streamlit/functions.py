@@ -420,7 +420,7 @@ def get_name_uid_mess_member():
     return l3
 
 #Groups all possible charges of an officer and returns a list of tuple/list
-def get_total_bill(officer,arrears,month):
+def get_total_bill(officer,arrears,month,year):
     #[ser,desc,amount,remarks]
     final_list=[]
     #This is the list to be returned (initialised here as global variable)
@@ -431,7 +431,9 @@ def get_total_bill(officer,arrears,month):
             break
 
     month=int(month)
-    print(month)
+    # print(month)
+    # import datetime
+    # year = datetime.datetime.now().year
 
     name=officer[i+2:]
     uid=officer[:i-1]
@@ -493,12 +495,12 @@ def get_total_bill(officer,arrears,month):
         Extra_Messing = "Extra Messing"
 
         # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month)
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
         cursor.execute(select_query, (Daily_Messing, officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
         daily = sum(mess)
 
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month)
+        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
         cursor.execute(select_query, (Extra_Messing, officer,))
         mess = [float(row[0]) for row in cursor.fetchall()]
         extra = sum(mess)
@@ -557,7 +559,7 @@ def get_total_bill(officer,arrears,month):
         cursor = connection.cursor()
 
         # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
-        select_query = "SELECT DESCRIPTION, AMOUNT, REMARKS FROM TOTAL_CHARGES WHERE MONTH(DATE) = {} AND UID = '{}'".format(month, officer)
+        select_query = "SELECT DESCRIPTION, AMOUNT, REMARKS FROM TOTAL_CHARGES WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND UID = '{}'".format(month,year, officer)
         
         cursor.execute(select_query)
         misc = [list(row) for row in cursor.fetchall()]
@@ -578,12 +580,12 @@ def get_total_bill(officer,arrears,month):
     total_sum=0.0
     for i in final_list:
         total_sum+=float(i[2])
-    final_list.append(["","","-----","-----"])
-    final_list.append(["","","Total: ",total_sum])
-    final_list.append(["","","Arrears: ",arrears])
-    final_list.append(["","","G/Total: ",total_sum+float(arrears)])
-    final_list.append(["","","R/Off: ",int(total_sum)+int(arrears)-total_sum-float(arrears)])
-    final_list.append(["","","Amount Payable: ",float(int(total_sum)+int(arrears))])
+    final_list.append(["","----------","----------"])
+    final_list.append(["","    Total: ",round(total_sum, 2),""])
+    final_list.append(["","    Arrears: ",round(arrears, 2),""])
+    final_list.append(["","    G/Total: ",round(total_sum+float(arrears),2),""])
+    final_list.append(["","    R/Off: ",round(int(total_sum)+int(arrears)-total_sum-float(arrears),2),""])
+    final_list.append(["","    Amount Payable: ",round(float(int(total_sum)+int(arrears)),2),""])
 
     # print (final_list)
     return final_list
