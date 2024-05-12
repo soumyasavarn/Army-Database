@@ -5,7 +5,7 @@ def set_database():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="root@123",
+        password="",
     )
     print ("database connnected successfully")
     # Create database if not exists

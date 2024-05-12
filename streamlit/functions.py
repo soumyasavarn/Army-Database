@@ -9,7 +9,7 @@ def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomoda
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -35,7 +35,7 @@ def get_fixed_charges():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -52,7 +52,7 @@ def get_fixed_charges_name():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -69,7 +69,7 @@ def modify_fixed_charge(name,rank,amount):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         rank = rank.upper()
@@ -90,7 +90,7 @@ def addto_current_split(name, amount):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -108,7 +108,7 @@ def empty_current_split():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -126,7 +126,7 @@ def addto_fixed_charges(rank_applicable, name, amount):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -148,7 +148,7 @@ def get_current_split():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )   
         cursor = connection.cursor()
@@ -167,7 +167,7 @@ def add_mess_entry(charge_type, description, remarks, amount, officer, date):
          connection = mysql.connector.connect(
              host="localhost",
              user="root",
-             password="root@123",
+             password="",
              database="ARMY_CAMP"
          )
          cursor = connection.cursor()
@@ -192,7 +192,7 @@ def get_mess_entry():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -211,16 +211,11 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
-        slice_index=0
-        for i in range(0,len(uid)):
-            if uid[i]==":":
-                slice_index=i
-                break
-            
+        
         if charge_type == "Individual":    
             insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE, REMARKS)
                               VALUES (%s, %s, %s, %s, %s, %s)"""                      
@@ -234,8 +229,12 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
             amount=float(amount)
             for i in range(0,len(officers_split)):
                 insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE, REMARKS)
-                              VALUES (%s, %s, %s, %s, %s, %s)"""                      
-                cursor.execute(insert_query, (officers_split[i][0], description, amount*float(officers_split[i][1])/100.0, charge_date, charge_type, charge_remarks))
+                              VALUES (%s, %s, %s, %s, %s, %s)"""  
+                tot = 0 
+                for ii in range(0,len(officers_split)):     
+                    officers_split[ii][1] = float(officers_split[ii][1])  
+                    tot += float(officers_split[ii][1])              
+                cursor.execute(insert_query, (officers_split[i][0], description, amount*float(officers_split[i][1])/tot, charge_date, charge_type, charge_remarks))
                 connection.commit()
         connection.close()
         return "Charge added successfully."
@@ -248,7 +247,7 @@ def get_charges():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -268,7 +267,7 @@ def existing_officers_uid():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         global cursor
@@ -288,7 +287,7 @@ def existing_officers_uid_mess():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         global cursor
@@ -309,7 +308,7 @@ def existing_officers_name():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -329,7 +328,7 @@ def existing_officers_name_mess():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -348,7 +347,7 @@ def get_name_rank():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -366,7 +365,7 @@ def get_unit(uid):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -387,7 +386,7 @@ def get_name_from_uid(uid):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -442,7 +441,7 @@ def get_total_bill(officer,arrears,month,year):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -464,7 +463,7 @@ def get_total_bill(officer,arrears,month,year):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -487,7 +486,7 @@ def get_total_bill(officer,arrears,month,year):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -521,7 +520,7 @@ def get_total_bill(officer,arrears,month,year):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
@@ -553,22 +552,47 @@ def get_total_bill(officer,arrears,month,year):
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="root@123",
+            password="",
             database="ARMY_CAMP"
         )
         cursor = connection.cursor()
 
         # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
-        select_query = "SELECT DESCRIPTION, AMOUNT, REMARKS FROM TOTAL_CHARGES WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND UID = '{}'".format(month,year, officer)
+        select_query = """SELECT DESCRIPTION, SUM(AMOUNT) AS TOTAL_AMOUNT
+        FROM TOTAL_CHARGES
+        WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s
+        GROUP BY DESCRIPTION"""
         
-        cursor.execute(select_query)
+        cursor.execute(select_query, (month, year, officer))
+
         misc = [list(row) for row in cursor.fetchall()]
         # print(misc)
         connection.close()
     except mysql.connector.Error as err:
         print(f"Error: {err}")
     for i in range (0,len(misc)):
-        misc_charge_list.append([i+5+len(fix),misc[i][0],misc[i][1],misc[i][2]])
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="ARMY_CAMP"
+        )
+        cursor = connection.cursor()
+        select_query = """SELECT REMARKS
+        FROM TOTAL_CHARGES
+        WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s AND DESCRIPTION = %s
+        """
+        cursor.execute(select_query, (month, year, officer,misc[i][0]))
+        remark_received = [list(row) for row in cursor.fetchall()]
+        connection.close()
+        remark_rec = ""
+        print (remark_received)
+        try:
+            remark_rec = remark_received[0][0]
+        except:
+            print ("Empty remark")
+        print (remark_rec)
+        misc_charge_list.append([i+5+len(fix),misc[i][0],misc[i][1],remark_rec])
     # print(misc_charge_list)
 
     for i in messing_charge_list:
