@@ -24,9 +24,23 @@ with col1:
 
         arrears = st.number_input(label="Arrears")
         
+        
+        with open(generate_bill(officer,arrears,report_month_str,report_year)[1], "rb") as pdf_file:
+            PDFbyte = pdf_file.read()
+
         if st.button("Generate Bill"):
-            st.text(generate_bill(officer,arrears,report_month_str,report_year))
+            st.text(generate_bill(officer,arrears,report_month_str,report_year)[0])
+            with open(generate_bill(officer,arrears,report_month_str,report_year)[1], "rb") as pdf_file:
+                PDFbyte = pdf_file.read()
             pass
+        
+
+        st.download_button(label="Export Bill",
+                    data=PDFbyte,
+                    file_name=generate_bill(officer,arrears,report_month_str,report_year)[1],
+                    mime='application/octet-stream')
+        
+        
 
        
         

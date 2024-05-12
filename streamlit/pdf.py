@@ -135,5 +135,9 @@ def generate_bill(officer,arrears,month,year):
     # Build the PDF
     pdf.build(elements, onLaterPages=onLaterPages)
 
-    # Output the location of the PDF
-    return "PDF generated at:" + pdf_filename
+    ret = []
+    ret.append("PDF generated at:" + pdf_filename)
+    ret.append(f'mess_bill_{name_tmp}.pdf')
+
+    
+    return ret

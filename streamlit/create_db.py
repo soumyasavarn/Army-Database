@@ -1,20 +1,26 @@
 import mysql.connector
 
+host_name = "sql6.freesqldatabase.com"
+user_name = "sql6705991"
+user_password = "p6A6dvDZN8" 
+db_name = "sql6705991"
+
 def set_database():
     # Connect to MySQL server
+    print ("Starting connection")
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
+        host=host_name,
+        user=user_name,
+        password=user_password
     )
     print ("database connnected successfully")
     # Create database if not exists
-    create_db_query = "CREATE DATABASE IF NOT EXISTS ARMY_CAMP"
+    create_db_query = "CREATE DATABASE IF NOT EXISTS sql6705991"
     create_db_cursor = connection.cursor()
     create_db_cursor.execute(create_db_query)
 
     # Use ARMY_CAMP database
-    use_db_query = "USE ARMY_CAMP"
+    use_db_query = "USE sql6705991"
     use_db_cursor = connection.cursor()
     use_db_cursor.execute(use_db_query)
 
