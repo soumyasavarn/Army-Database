@@ -11,7 +11,9 @@ def set_database():
     connection = mysql.connector.connect(
         host=host_name,
         user=user_name,
-        password=user_password
+        password=user_password,
+        charset='utf8mb4'
+
     )
     print ("database connnected successfully")
     # Create database if not exists
