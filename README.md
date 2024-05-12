@@ -1,4 +1,7 @@
-Database design for local transactions.
-host:localhost
-username: root
-password: root@123
+Database design for local transactions implemented from scratch.
+
+host: "localhost"
+
+username: "root"
+
+password: ""
