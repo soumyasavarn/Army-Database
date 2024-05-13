@@ -12,7 +12,6 @@ def set_database():
         host=host_name,
         user=user_name,
         password=user_password,
-        charset='utf8mb4'
 
     )
     print ("database connnected successfully")

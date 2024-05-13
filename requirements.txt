@@ -7,5 +7,3 @@ pandas==1.5.0                   # For data manipulation and analysis
 numpy==1.24.0                   # For numerical operations on large, multi-dimensional arrays and matrices
 sqlalchemy==1.4.39              # SQL toolkit and Object-Relational Mapping (ORM) system
 matplotlib==3.6.0               # For creating static, interactive, and animated visualizations in Python
-
-
