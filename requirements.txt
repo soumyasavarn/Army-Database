@@ -1,9 +1,7 @@
 # Updated to the latest versions as of May 2024
-mysql-connector-python==8.0.31  # Latest stable version of MySQL Connector/Python for database connectivity
-streamlit==1.13.0               # Latest stable version of Streamlit for building interactive web apps
+mysql-connector-python==8.4.0  # Latest stable version of MySQL Connector/Python for database connectivity
+streamlit==1.34.0               # Latest stable version of Streamlit for building interactive web apps
 
 # Additional useful libraries for a typical Python data handling and web app setup
-pandas==1.5.0                   # For data manipulation and analysis
-numpy==1.24.0                   # For numerical operations on large, multi-dimensional arrays and matrices
-sqlalchemy==1.4.39              # SQL toolkit and Object-Relational Mapping (ORM) system
-matplotlib==3.6.0               # For creating static, interactive, and animated visualizations in Python
+pandas==2.2.2                  # For data manipulation and analysis
+numpy==1.26.4                   # For numerical operations on large, multi-dimensional arrays and matrices
