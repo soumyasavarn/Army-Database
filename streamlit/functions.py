@@ -23,7 +23,7 @@ def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomoda
           read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         if (guest):
@@ -55,12 +55,12 @@ def get_fixed_charges():
           read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT SUB_NAME,RANK_1,RANK_2,RANK_3,RANK_4 FROM FIXED_CHARGES limit 15"
         cursor.execute(select_query)
-        split_list = [list([str(row[0]),str(row[1]),str(row[2]),str(row[3]),str(row[4])]) for row in cursor.fetchall()] 
+        split_list = [list([str(row['SUB_NAME']),str(row['RANK_1']),str(row['RANK_2']),str(row['RANK_3']),str(row['RANK_4'])]) for row in cursor.fetchall()] 
         connection.close()
         return list(split_list)
     except mysql.connector.Error as err:
@@ -70,20 +70,20 @@ def get_fixed_charges_name():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT SUB_NAME,RANK_1,RANK_2,RANK_3,RANK_4 FROM FIXED_CHARGES limit 15"
         cursor.execute(select_query)
-        split_list = [str(row[0]) for row in cursor.fetchall()] 
+        split_list = [str(row['SUB_NAME']) for row in cursor.fetchall()] 
         connection.close()
         return list(split_list)
     except mysql.connector.Error as err:
@@ -93,15 +93,15 @@ def modify_fixed_charge(name,rank,amount):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         rank = rank.upper()
         rank = rank.replace(" ","_")
@@ -120,15 +120,15 @@ def addto_current_split(name, amount):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         insert_query = """INSERT INTO CURRENT_SPLIT (NAME, AMOUNT)
@@ -144,15 +144,15 @@ def empty_current_split():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         query = """TRUNCATE TABLE CURRENT_SPLIT;"""
@@ -168,15 +168,15 @@ def addto_fixed_charges(rank_applicable, name, amount):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         insert_query = """INSERT INTO FIXED_CHARGES (SUB_NAME,RANK_1, RANK_2, RANK_3, RANK_4)
@@ -196,20 +196,20 @@ def get_current_split():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         ) 
         cursor = connection.cursor()
         select_query = "SELECT NAME,AMOUNT FROM CURRENT_SPLIT limit 10"
         cursor.execute(select_query)
-        split_list = [list([str(row[0]),str(row[1])]) for row in cursor.fetchall()] 
+        split_list = [list([str(row['NAME']),str(row['AMOUNT'])]) for row in cursor.fetchall()] 
         connection.close()
         return list(split_list)
         
@@ -221,15 +221,15 @@ def add_mess_entry(charge_type, description, remarks, amount, officer, date):
      try:
          connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
          cursor = connection.cursor()
          if (charge_type == "Normal"):
@@ -252,20 +252,20 @@ def get_mess_entry():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT TYPE,DESCRIPTION,AMOUNT FROM MESS_LEDGER limit 10"
         cursor.execute(select_query)
-        mess_list = [list([str(row[0]),str(row[1]),str(row[2])]) for row in cursor.fetchall()] 
+        mess_list = [list([str(row['TYPE']),str(row['DESCRIPTION']),str(row['AMOUNT'])]) for row in cursor.fetchall()] 
         connection.close()
         return list(mess_list)
     except mysql.connector.Error as err:
@@ -277,15 +277,15 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         
@@ -319,20 +319,20 @@ def get_charges():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT UID, DESCRIPTION, AMOUNT, DATE FROM TOTAL_CHARGES"
         cursor.execute(select_query)
-        charge_data = [list([str(row[0]),str(row[1]),str(row[2]),str(row[3])]) for row in cursor.fetchall()]      
+        charge_data = [list([str(row['UID']),str(row['DESCRIPTION']),str(row['AMOUNT']),str(row['DATE'])]) for row in cursor.fetchall()]      
         connection.close()
         return charge_data
     except mysql.connector.Error as err:
@@ -345,15 +345,15 @@ def existing_officers_uid():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         global cursor
         cursor = connection.cursor()
@@ -371,21 +371,21 @@ def existing_officers_uid_mess():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         global cursor
         cursor = connection.cursor()
         select_query = "SELECT UID FROM OFFICERS WHERE IS_MESS_MEMBER=1"
         cursor.execute(select_query)
-        uid_list = [row[0] for row in cursor.fetchall()]  
+        uid_list = [row['UID'] for row in cursor.fetchall()]  
         connection.close()
         return uid_list
     except mysql.connector.Error as err:
@@ -398,20 +398,20 @@ def existing_officers_name():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT NAME FROM OFFICERS"
         cursor.execute(select_query)
-        officers_name_list = [row[0] for row in cursor.fetchall()]      
+        officers_name_list = [row['NAME'] for row in cursor.fetchall()]      
         connection.close()
         return officers_name_list
 
@@ -424,20 +424,20 @@ def existing_officers_name_mess():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT NAME FROM OFFICERS WHERE IS_MESS_MEMBER=1"
         cursor.execute(select_query)
-        officers_name_list = [row[0] for row in cursor.fetchall()]      
+        officers_name_list = [row['NAME'] for row in cursor.fetchall()]      
         connection.close()
         return officers_name_list
 
@@ -449,15 +449,15 @@ def get_name_rank():
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT NAME,OFFICER_RANK FROM OFFICERS limit 10"
@@ -473,21 +473,21 @@ def get_unit(uid):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT UNIT FROM OFFICERS WHERE UID=%s"
         cursor.execute(select_query,(uid,))
-        unit = [str(row[0]) for row in cursor.fetchall()]
-        unit = str(uid [0])      
+        unit = [str(row['UNIT']) for row in cursor.fetchall()]
+        unit = str(unit [0])      
         connection.close()
         return unit       
     except mysql.connector.Error as err:
@@ -500,20 +500,20 @@ def get_name_from_uid(uid):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT NAME FROM OFFICERS WHERE UID=%s"
         cursor.execute(select_query,(uid,))
-        name = [str(row[0]) for row in cursor.fetchall()]
+        name = [str(row['NAME']) for row in cursor.fetchall()]
         name = str(name [0])      
         connection.close()
         return name
@@ -561,20 +561,20 @@ def get_total_bill(officer,arrears,month,year):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT OFFICER_RANK FROM OFFICERS WHERE UID=%s"
         cursor.execute(select_query,(uid,))
-        rank = [str(row[0]) for row in cursor.fetchall()]
+        rank = [str(row['OFFICER_RANK']) for row in cursor.fetchall()]
         rank=str(rank[0])
         connection.close()
         
@@ -589,20 +589,20 @@ def get_total_bill(officer,arrears,month,year):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT IS_MARRIED,ACCOMODATION_AVAILED FROM OFFICERS WHERE UID = %s"
         cursor.execute(select_query,(uid,))
-        charges = [[bool(row[0]),bool(row[1])] for row in cursor.fetchall()]
+        charges = [[bool(row['IS_MARRIED']),bool(row['ACCOMODATION_AVAILED'])] for row in cursor.fetchall()]
         # print(charges)
         connection.close()
         # print (charges)    
@@ -618,15 +618,15 @@ def get_total_bill(officer,arrears,month,year):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         Daily_Messing = "Daily Messing"
@@ -635,12 +635,12 @@ def get_total_bill(officer,arrears,month,year):
         # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
         select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
         cursor.execute(select_query, (Daily_Messing, officer,))
-        mess = [float(row[0]) for row in cursor.fetchall()]
+        mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
         daily = sum(mess)
 
         select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
         cursor.execute(select_query, (Extra_Messing, officer,))
-        mess = [float(row[0]) for row in cursor.fetchall()]
+        mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
         extra = sum(mess)
 
         connection.close()
@@ -658,15 +658,15 @@ def get_total_bill(officer,arrears,month,year):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
         select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME='Spouse Memento Fund'"
@@ -696,15 +696,15 @@ def get_total_bill(officer,arrears,month,year):
     try:
         connection = pymysql.connect(
           charset="utf8mb4",
-          connect_timeout=10,
+          connect_timeout=timeout,
           cursorclass=pymysql.cursors.DictCursor,
           db="defaultdb",
           host="army-database-army-database.j.aivencloud.com",
           password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=10,
+          read_timeout=timeout,
           port=21565,
           user="avnadmin",
-          write_timeout=10,
+          write_timeout=timeout,
         )
         cursor = connection.cursor()
 

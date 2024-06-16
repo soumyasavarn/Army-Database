@@ -20,7 +20,7 @@ def set_database():
       read_timeout=timeout,
       port=21565,
       user="avnadmin",
-      write_timeout=10,
+      write_timeout=timeout,
     )
     print ("database connnected successfully")
     # Create database if not exists
