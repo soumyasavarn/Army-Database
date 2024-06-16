@@ -359,7 +359,7 @@ def existing_officers_uid():
         cursor = connection.cursor()
         select_query = "SELECT UID FROM OFFICERS"
         cursor.execute(select_query)
-        uid_list = [row[0] for row in cursor.fetchall()]  
+        uid_list = [row['UID'] for row in cursor.fetchall()]  
         connection.close()
         return uid_list
     except mysql.connector.Error as err:
