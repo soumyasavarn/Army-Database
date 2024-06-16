@@ -8,6 +8,7 @@ host_name = "army-database-army-database.j.aivencloud.com"
 user_name = "avnadmin"
 user_password = "AVNS__umkEfKeGkBKQ4UL31v" 
 db_name = "defaultdb"
+timeout=10
 
 #commit function
 def add_officer(uid, officer_name, officer_rank, officer_unit, married, accomodation, mess_member, guest):
