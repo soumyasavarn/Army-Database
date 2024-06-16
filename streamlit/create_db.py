@@ -1,4 +1,5 @@
 import mysql.connector
+import pymysql
 
 host_name = "army-database-army-database.j.aivencloud.com"
 user_name = "avnadmin"
@@ -8,11 +9,17 @@ db_name = "defaultdb"
 def set_database():
     # Connect to MySQL server
     print ("Starting connection")
-    connection = mysql.connector.connect(
-        host=host_name,
-        user=user_name,
-        password=user_password,
-
+    connection = pymysql.connect(
+      charset="utf8mb4",
+      connect_timeout=timeout,
+      cursorclass=pymysql.cursors.DictCursor,
+      db="defaultdb",
+      host="army-database-army-database.j.aivencloud.com",
+      password="AVNS__umkEfKeGkBKQ4UL31v",
+      read_timeout=timeout,
+      port=21565,
+      user="avnadmin",
+      write_timeout=10,
     )
     print ("database connnected successfully")
     # Create database if not exists
