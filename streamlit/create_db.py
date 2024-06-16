@@ -1,9 +1,9 @@
 import mysql.connector
 
-host_name = "sql6.freesqldatabase.com"
-user_name = "sql6705991"
-user_password = "p6A6dvDZN8" 
-db_name = "sql6705991"
+host_name = "army-database-army-database.j.aivencloud.com"
+user_name = "avnadmin"
+user_password = "AVNS_XUQ0jgTDxnOx9ZDvPSy" 
+db_name = "defaultdb"
 
 def set_database():
     # Connect to MySQL server
