@@ -5,7 +5,7 @@ from datetime import datetime
 
 host_name = "army-database-army-database.j.aivencloud.com"
 user_name = "avnadmin"
-user_password = "AVNS_XUQ0jgTDxnOx9ZDvPSy" 
+user_password = "AVNS__umkEfKeGkBKQ4UL31v" 
 db_name = "defaultdb"
 
 #commit function
