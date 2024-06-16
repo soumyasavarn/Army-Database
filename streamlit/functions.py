@@ -462,7 +462,7 @@ def get_name_rank():
         cursor = connection.cursor()
         select_query = "SELECT NAME,OFFICER_RANK FROM OFFICERS limit 10"
         cursor.execute(select_query)
-        officers_name_rank_list = [list([str(row[0]),str(row[1])]) for row in cursor.fetchall()] 
+        officers_name_rank_list = [list([str(row['NAME']),str(row['OFFICER_RANK'])]) for row in cursor.fetchall()] 
         connection.close()
         return list(officers_name_rank_list)
     except mysql.connector.Error as err:
