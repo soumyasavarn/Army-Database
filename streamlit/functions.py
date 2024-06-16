@@ -292,8 +292,10 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
         if charge_type == "Individual":    
             insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE, REMARKS)
                               VALUES (%s, %s, %s, %s, %s, %s)"""                      
+            print ("OK 1")
             cursor.execute(insert_query, (uid, description, amount, charge_date, charge_type, charge_remarks))
             connection.commit()
+            print ("OK 2")
         else:
             #Split logic here
             if len(officers_split)==0:
@@ -487,7 +489,7 @@ def get_unit(uid):
         select_query = "SELECT UNIT FROM OFFICERS WHERE UID=%s"
         cursor.execute(select_query,(uid,))
         unit = [str(row['UNIT']) for row in cursor.fetchall()]
-        unit = str(unit [0])      
+        unit = str(uid [0])      
         connection.close()
         return unit       
     except mysql.connector.Error as err:
