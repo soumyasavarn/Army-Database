@@ -16,12 +16,12 @@ def set_database():
     )
     print ("database connnected successfully")
     # Create database if not exists
-    create_db_query = "CREATE DATABASE IF NOT EXISTS sql6705991"
+    create_db_query = "CREATE DATABASE IF NOT EXISTS " + db_name
     create_db_cursor = connection.cursor()
     create_db_cursor.execute(create_db_query)
 
     # Use ARMY_CAMP database
-    use_db_query = "USE sql6705991"
+    use_db_query = "USE " + db_name
     use_db_cursor = connection.cursor()
     use_db_cursor.execute(use_db_query)
 
