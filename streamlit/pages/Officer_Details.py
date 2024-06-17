@@ -33,8 +33,9 @@ if st.button("Get Officer Data"):
 
 # Button to fetch all officer data
 if st.button("Get All Officers"):
-    all_officers_data = get_all_officer_data()  # Assuming get_all_fficer_data() fetches all officers
-
+    all_officers_data = get_all_officer_data()  # Assuming get_all_officer_data() fetches all officers
+    print (all_officers_data)
+    print ("Entered frontend")
     if isinstance(all_officers_data, str):
         st.error(all_officers_data)
     elif all_officers_data:

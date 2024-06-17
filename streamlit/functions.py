@@ -773,7 +773,8 @@ def get_all_officer_data():
         
         
         result = cursor.fetchall()
-    
+        print (result)
+        print ("OK")
         # Close cursor and connection
         cursor.close()
         connection.close()
