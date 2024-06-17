@@ -358,7 +358,6 @@ def existing_officers_uid():
           user="avnadmin",
           write_timeout=timeout,
         )
-        global cursor
         cursor = connection.cursor()
         select_query = "SELECT UID FROM OFFICERS"
         cursor.execute(select_query)
@@ -384,7 +383,7 @@ def existing_officers_uid_mess():
           user="avnadmin",
           write_timeout=timeout,
         )
-        global cursor
+        
         cursor = connection.cursor()
         select_query = "SELECT UID FROM OFFICERS WHERE IS_MESS_MEMBER=1"
         cursor.execute(select_query)
@@ -543,226 +542,166 @@ def get_name_uid_mess_member():
     return l3
 
 #Groups all possible charges of an officer and returns a list of tuple/list
-def get_total_bill(officer,arrears,month,year):
-    #[ser,desc,amount,remarks]
-    final_list=[]
-    #This is the list to be returned (initialised here as global variable)
+def get_total_bill(officer, arrears, month, year):
+    final_list = []
     ind = 0
-    for i in range(0,len(officer)):
-        if officer[i]==':':
-            ind=i
+    for i in range(len(officer)):
+        if officer[i] == ':':
+            ind = i
             break
 
-    month=int(month)
-    # print(month)
-    # import datetime
-    # year = datetime.datetime.now().year
+    month = int(month)
+    name = officer[ind + 2:].strip()
+    uid = officer[:ind - 1].strip()
+    rank = []
 
-    name=officer[i+2:]
-    uid=officer[:i-1]
-    rank=[]
     try:
         connection = pymysql.connect(
-          charset="utf8mb4",
-          connect_timeout=timeout,
-          cursorclass=pymysql.cursors.DictCursor,
-          db="defaultdb",
-          host="army-database-army-database.j.aivencloud.com",
-          password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=timeout,
-          port=21565,
-          user="avnadmin",
-          write_timeout=timeout,
+            host="army-database-army-database.j.aivencloud.com",
+            user="avnadmin",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            database="defaultdb",
+            port=21565,
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor
         )
-        cursor = connection.cursor()
-        select_query = "SELECT OFFICER_RANK FROM OFFICERS WHERE UID=%s"
-        cursor.execute(select_query,(uid,))
-        rank = [str(row['OFFICER_RANK']) for row in cursor.fetchall()]
-        rank=str(rank[0])
-        connection.close()
-        
-    except mysql.connector.Error as err:
+        with connection.cursor() as cursor:
+            select_query = "SELECT OFFICER_RANK FROM OFFICERS WHERE UID=%s"
+            cursor.execute(select_query, (uid,))
+            rank = [str(row['OFFICER_RANK']) for row in cursor.fetchall()]
+            rank = str(rank[0])
+    except pymysql.MySQLError as err:
         print(f"Error: {err}")
-    
-    rank = rank.upper()
-    rank=rank.replace(" ","_")
-    # print(rank)
-    # print(name,uid)
-    charges=None
+    finally:
+        connection.close()
+
+    rank = rank.upper().replace(" ", "_")
+    charges = None
+
     try:
         connection = pymysql.connect(
-          charset="utf8mb4",
-          connect_timeout=timeout,
-          cursorclass=pymysql.cursors.DictCursor,
-          db="defaultdb",
-          host="army-database-army-database.j.aivencloud.com",
-          password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=timeout,
-          port=21565,
-          user="avnadmin",
-          write_timeout=timeout,
+            host="army-database-army-database.j.aivencloud.com",
+            user="avnadmin",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            database="defaultdb",
+            port=21565,
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor
         )
-        cursor = connection.cursor()
-        select_query = "SELECT IS_MARRIED,ACCOMODATION_AVAILED FROM OFFICERS WHERE UID = %s"
-        cursor.execute(select_query,(uid,))
-        charges = [[bool(row['IS_MARRIED']),bool(row['ACCOMODATION_AVAILED'])] for row in cursor.fetchall()]
-        # print(charges)
-        connection.close()
-        # print (charges)    
-    except mysql.connector.Error as err:
+        with connection.cursor() as cursor:
+            select_query = "SELECT IS_MARRIED, ACCOMODATION_AVAILED FROM OFFICERS WHERE UID = %s"
+            cursor.execute(select_query, (uid,))
+            charges = [[bool(row['IS_MARRIED']), bool(row['ACCOMODATION_AVAILED'])] for row in cursor.fetchall()]
+    except pymysql.MySQLError as err:
         print(f"Error: {err}")
+    finally:
+        connection.close()
 
-    # 1. messing charges
-    messing_charge_list=[]
-    mess=[]
-    daily=0.00
-    extra=0.00
-    
+    messing_charge_list = []
+    daily, extra = 0.00, 0.00
+
     try:
         connection = pymysql.connect(
-          charset="utf8mb4",
-          connect_timeout=timeout,
-          cursorclass=pymysql.cursors.DictCursor,
-          db="defaultdb",
-          host="army-database-army-database.j.aivencloud.com",
-          password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=timeout,
-          port=21565,
-          user="avnadmin",
-          write_timeout=timeout,
+            host="army-database-army-database.j.aivencloud.com",
+            user="avnadmin",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            database="defaultdb",
+            port=21565,
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor
         )
-        cursor = connection.cursor()
-        Daily_Messing = "Daily Messing"
-        Extra_Messing = "Extra Messing"
+        with connection.cursor() as cursor:
+            select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND TYPE = %s AND OFFICER = %s"
+            cursor.execute(select_query, (month, year, "Daily Messing", officer))
+            mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
+            daily = sum(mess)
 
-        # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
-        cursor.execute(select_query, (Daily_Messing, officer,))
-        mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
-        daily = sum(mess)
-
-        select_query = "SELECT AMOUNT FROM MESS_LEDGER WHERE MONTH(DATE) = {} AND YEAR(DATE) = {} AND TYPE = %s AND OFFICER = %s".format(month,year)
-        cursor.execute(select_query, (Extra_Messing, officer,))
-        mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
-        extra = sum(mess)
-
-        connection.close()
-        # print (daily, extra)
-    except mysql.connector.Error as err:
+            cursor.execute(select_query, (month, year, "Extra Messing", officer))
+            mess = [float(row['AMOUNT']) for row in cursor.fetchall()]
+            extra = sum(mess)
+    except pymysql.MySQLError as err:
         print(f"Error: {err}")
-        
-    messing_charge_list.append([1,"Daily Messing",daily,""])
-    messing_charge_list.append([2,"Extra Messing",extra,""])
-    # print(messing_charge_list)
+    finally:
+        connection.close()
 
-    # 2. fixed charges list
-    fixed_charge_list=[]
-    fix=[]
+    messing_charge_list.append([1, "Daily Messing", daily, ""])
+    messing_charge_list.append([2, "Extra Messing", extra, ""])
+
+    fixed_charge_list = []
     try:
         connection = pymysql.connect(
-          charset="utf8mb4",
-          connect_timeout=timeout,
-          cursorclass=pymysql.cursors.DictCursor,
-          db="defaultdb",
-          host="army-database-army-database.j.aivencloud.com",
-          password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=timeout,
-          port=21565,
-          user="avnadmin",
-          write_timeout=timeout,
+            host="army-database-army-database.j.aivencloud.com",
+            user="avnadmin",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            database="defaultdb",
+            port=21565,
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor
         )
-        cursor = connection.cursor()
-        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME='Spouse Memento Fund'"
-        cursor.execute(select_query)
-        fix = [list(row) for row in cursor.fetchall()]
-        fixed_charge_list.append([3,fix[0][0],float(fix[0][1])*int(charges[0][0]),""])
+        with connection.cursor() as cursor:
+            select_query = f"SELECT SUB_NAME, {rank} FROM FIXED_CHARGES WHERE SUB_NAME='Spouse Memento Fund'"
+            cursor.execute(select_query)
+            fix = [row for row in cursor.fetchall()]
+            fixed_charge_list.append([3, fix[0]['SUB_NAME'], float(fix[0][rank]) * int(charges[0][0]), ""])
 
-        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME='Accomodation'"
-        cursor.execute(select_query)
-        fix = [list(row) for row in cursor.fetchall()]
-        fixed_charge_list.append([4,fix[0][0],float(fix[0][1])*int(charges[0][1]),""])
+            select_query = f"SELECT SUB_NAME, {rank} FROM FIXED_CHARGES WHERE SUB_NAME='Accomodation'"
+            cursor.execute(select_query)
+            fix = [row for row in cursor.fetchall()]
+            fixed_charge_list.append([4, fix[0]['SUB_NAME'], float(fix[0][rank]) * int(charges[0][1]), ""])
 
-        select_query = "SELECT SUB_NAME,"+rank+" FROM FIXED_CHARGES WHERE SUB_NAME!='Accomodation' AND SUB_NAME!='Spouse Memento Fund'"
-        cursor.execute(select_query)
-        fix = [list(row) for row in cursor.fetchall()]
-        connection.close()
-        
-    except mysql.connector.Error as err:
+            select_query = f"SELECT SUB_NAME, {rank} FROM FIXED_CHARGES WHERE SUB_NAME!='Accomodation' AND SUB_NAME!='Spouse Memento Fund'"
+            cursor.execute(select_query)
+            fix = [row for row in cursor.fetchall()]
+    except pymysql.MySQLError as err:
         print(f"Error: {err}")
-    for i in range (5,len(fix)+5):
-        fixed_charge_list.append([i,fix[i-5][0],fix[i-5][1],""])
-    # print(fixed_charge_list)
+    finally:
+        connection.close()
 
-    # 3. misc charges list
-    misc_charge_list=[]
-    misc=[]
+    for i in range(5, len(fix) + 5):
+        fixed_charge_list.append([i, fix[i - 5]['SUB_NAME'], float(fix[i - 5][rank]), ""])
+
+    misc_charge_list = []
     try:
         connection = pymysql.connect(
-          charset="utf8mb4",
-          connect_timeout=timeout,
-          cursorclass=pymysql.cursors.DictCursor,
-          db="defaultdb",
-          host="army-database-army-database.j.aivencloud.com",
-          password="AVNS__umkEfKeGkBKQ4UL31v",
-          read_timeout=timeout,
-          port=21565,
-          user="avnadmin",
-          write_timeout=timeout,
+            host="army-database-army-database.j.aivencloud.com",
+            user="avnadmin",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            database="defaultdb",
+            port=21565,
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor
         )
-        cursor = connection.cursor()
+        with connection.cursor() as cursor:
+            select_query = """SELECT DESCRIPTION, SUM(AMOUNT) AS TOTAL_AMOUNT
+                              FROM TOTAL_CHARGES
+                              WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s
+                              GROUP BY DESCRIPTION"""
+            cursor.execute(select_query, (month, year, officer))
+            misc = [row for row in cursor.fetchall()]
 
-        # Assuming date1 and date2 are properly formatted strings in YYYY-MM-DD format
-        select_query = """SELECT DESCRIPTION, SUM(AMOUNT) AS TOTAL_AMOUNT
-        FROM TOTAL_CHARGES
-        WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s
-        GROUP BY DESCRIPTION"""
-        
-        cursor.execute(select_query, (month, year, officer))
-
-        misc = [list(row) for row in cursor.fetchall()]
-        # print(misc)
-        connection.close()
-    except mysql.connector.Error as err:
+            for i in range(len(misc)):
+                cursor.execute("""SELECT REMARKS
+                                  FROM TOTAL_CHARGES
+                                  WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s AND DESCRIPTION = %s""",
+                               (month, year, officer, misc[i]['DESCRIPTION']))
+                remark_received = [row for row in cursor.fetchall()]
+                remark_rec = remark_received[0]['REMARKS'] if remark_received else ""
+                misc_charge_list.append([i + 5 + len(fix), misc[i]['DESCRIPTION'], misc[i]['TOTAL_AMOUNT'], remark_rec])
+    except pymysql.MySQLError as err:
         print(f"Error: {err}")
-    for i in range (0,len(misc)):
-        connection = mysql.connector.connect(
-            host=host_name,
-        user=user_name,
-        password=user_password,database=db_name
-        )
-        cursor = connection.cursor()
-        select_query = """SELECT REMARKS
-        FROM TOTAL_CHARGES
-        WHERE MONTH(DATE) = %s AND YEAR(DATE) = %s AND UID = %s AND DESCRIPTION = %s
-        """
-        cursor.execute(select_query, (month, year, officer,misc[i][0]))
-        remark_received = [list(row) for row in cursor.fetchall()]
+    finally:
         connection.close()
-        remark_rec = ""
-        print (remark_received)
-        try:
-            remark_rec = remark_received[0][0]
-        except:
-            print ("Empty remark")
-        print (remark_rec)
-        misc_charge_list.append([i+5+len(fix),misc[i][0],misc[i][1],remark_rec])
-    # print(misc_charge_list)
 
-    for i in messing_charge_list:
-        final_list.append(i)
-    for i in fixed_charge_list:
-        final_list.append(i)
-    for i in misc_charge_list:
-        final_list.append(i)
-    total_sum=0.0
-    for i in final_list:
-        total_sum+=float(i[2])
-    final_list.append(["","----------","----------"])
-    final_list.append(["","    Total: ",round(total_sum, 2),""])
-    final_list.append(["","    Arrears: ",round(arrears, 2),""])
-    final_list.append(["","    G/Total: ",round(total_sum+float(arrears),2),""])
-    final_list.append(["","    R/Off: ",round(int(total_sum)+int(arrears)-total_sum-float(arrears),2),""])
-    final_list.append(["","    Amount Payable: ",round(float(int(total_sum)+int(arrears)),2),""])
+    final_list.extend(messing_charge_list)
+    final_list.extend(fixed_charge_list)
+    final_list.extend(misc_charge_list)
 
-    # print (final_list)
+    total_sum = sum(float(item[2]) for item in final_list)
+    final_list.append(["", "----------", "----------"])
+    final_list.append(["", "    Total: ", round(total_sum, 2), ""])
+    final_list.append(["", "    Arrears: ", round(float(arrears), 2), ""])
+    final_list.append(["", "    G/Total: ", round(total_sum + float(arrears), 2), ""])
+    final_list.append(["", "    R/Off: ", round(int(total_sum) + int(arrears) - total_sum - float(arrears), 2), ""])
+    final_list.append(["", "    Amount Payable: ", round(float(int(total_sum) + int(arrears)), 2), ""])
+
     return final_list
