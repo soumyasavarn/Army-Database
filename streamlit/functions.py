@@ -705,3 +705,80 @@ def get_total_bill(officer, arrears, month, year):
     final_list.append(["", "    Amount Payable: ", round(float(int(total_sum) + int(arrears)), 2), ""])
 
     return final_list
+
+
+
+def get_officer_data(uid=None, name=None):
+    try:
+        timeout = 10  # Define a reasonable timeout value (adjust as needed)
+        
+        connection = pymysql.connect(
+            charset="utf8mb4",
+            connect_timeout=timeout,
+            cursorclass=pymysql.cursors.DictCursor,
+            db="defaultdb",
+            host="army-database-army-database.j.aivencloud.com",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            read_timeout=timeout,
+            port=21565,
+            user="avnadmin",
+            write_timeout=timeout,
+        )
+        
+        cursor = connection.cursor()
+        
+        if uid:
+            query = "SELECT * FROM OFFICERS WHERE UID = %s"
+            cursor.execute(query, (uid,))
+        elif name:
+            query = "SELECT * FROM OFFICERS WHERE NAME = %s"
+            cursor.execute(query, (name,))
+        else:
+            return "Please provide a UID or Name."
+        
+        result = cursor.fetchall()
+    
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        
+        return result  # Returns a list of dictionaries (each row) or an empty list if no results
+        
+    except pymysql.MySQLError as e:
+        return str(e)  # Return error message if MySQL error occurs
+
+
+def get_all_officer_data():
+    try:
+        timeout = 10  # Define a reasonable timeout value (adjust as needed)
+        
+        connection = pymysql.connect(
+            charset="utf8mb4",
+            connect_timeout=timeout,
+            cursorclass=pymysql.cursors.DictCursor,
+            db="defaultdb",
+            host="army-database-army-database.j.aivencloud.com",
+            password="AVNS__umkEfKeGkBKQ4UL31v",
+            read_timeout=timeout,
+            port=21565,
+            user="avnadmin",
+            write_timeout=timeout,
+        )
+        
+        cursor = connection.cursor()
+        
+     
+        query = "SELECT * FROM OFFICERS "
+        cursor.execute(query)
+        
+        
+        result = cursor.fetchall()
+    
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        
+        return result  # Returns a list of dictionaries (each row) or an empty list if no results
+        
+    except pymysql.MySQLError as e:
+        return str(e)  # Return error message if MySQL error occurs
