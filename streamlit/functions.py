@@ -288,7 +288,8 @@ def add_charge(charge_type, uid, description, amount, charge_date, charge_remark
           write_timeout=timeout,
         )
         cursor = connection.cursor()
-        
+        print ("No error in connection !")
+        print ("Charge Type: ",charge_type)
         if charge_type == "Individual":    
             insert_query = """INSERT INTO TOTAL_CHARGES (UID, DESCRIPTION, AMOUNT, DATE, TYPE_OF_CHARGE, REMARKS)
                               VALUES (%s, %s, %s, %s, %s, %s)"""                      
@@ -489,7 +490,7 @@ def get_unit(uid):
         select_query = "SELECT UNIT FROM OFFICERS WHERE UID=%s"
         cursor.execute(select_query,(uid,))
         unit = [str(row['UNIT']) for row in cursor.fetchall()]
-        unit = str(uid [0])      
+        unit = str(unit [0])      
         connection.close()
         return unit       
     except mysql.connector.Error as err:
