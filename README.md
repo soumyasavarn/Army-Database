@@ -1,4 +1,4 @@
-# Army Camp Mess and Expense Management System [PRTOTYPE]
+# Army Camp Mess and Expense Management System [PROTOTYPE]
 
 ## Overview
 This project is an end-to-end mess and expense management system designed for an Army Camp. It ensures efficient data organization, precise expense splitting, and billing. The system is built using MySQL for the database and Python with Streamlit for the front-end interface and Reportlab for generating reports. Robust exception handling is implemented to ensure system resilience, especially in financial data management.
